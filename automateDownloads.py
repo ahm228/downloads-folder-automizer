@@ -7,12 +7,14 @@ logging.basicConfig(level=logging.INFO)
 def move_file_to_folder(file_path, folder_name, base_path):
     """Move a file to a specific folder, creating the folder if it doesn't exist."""
     folder_path = os.path.join(base_path, folder_name)
+    
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
+        
     try:
         shutil.move(file_path, os.path.join(folder_path, os.path.basename(file_path)))
         return True
-    except shutil.Error as e:
+    except (shutil.Error, FileNotFoundError, PermissionError) as e:  # Handle specific exceptions
         logging.error(f"Error moving {file_path} to {folder_name}. Reason: {e}")
         return False
 
@@ -23,7 +25,13 @@ def organize_folder(dir_path, folders):
 
     while queue:
         current_path = queue.pop()
-        for item_name in os.listdir(current_path):
+        try:
+            items = os.listdir(current_path)
+        except PermissionError as e:  # Handle permission error
+            logging.error(f"Cannot access {current_path}. Reason: {e}")
+            continue
+
+        for item_name in items:
             item_path = os.path.join(current_path, item_name)
 
             # If it's a directory, add to the queue
@@ -56,8 +64,7 @@ def main(target_folder):
     }
 
     # Convert extensions to lowercase for case-insensitive check
-    for folder, extensions in folders.items():
-        folders[folder] = [ext.lower() for ext in extensions]
+    folders = {folder: [ext.lower() for ext in extensions] for folder, extensions in folders.items()}
 
     moved_files = organize_folder(target_folder, folders)
     logging.info(f"{moved_files} files have been organized.")
