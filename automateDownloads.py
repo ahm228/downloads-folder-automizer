@@ -2,52 +2,60 @@ import os
 import shutil
 import logging
 
+#Set up logging with a basic configuration to show INFO level logs
 logging.basicConfig(level=logging.INFO)
 
-def move_file_to_folder(file_path, folder_name, base_path):
-    """Move a file to a specific folder, creating the folder if it doesn't exist."""
-    folder_path = os.path.join(base_path, folder_name)
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
+#Move a file to a specific folder, creating the folder if it doesn't exist.
+def moveFileToFolder(filePath, folderName, basePath):
+    folderPath = os.path.join(basePath, folderName) #Construct the destination folder path
+
+    #Create the destination folder if it doesn't exist
+    if not os.path.exists(folderPath):
+        os.makedirs(folderPath)
+
     try:
-        shutil.move(file_path, os.path.join(folder_path, os.path.basename(file_path)))
+        shutil.move(filePath, os.path.join(folderPath, os.path.basename(filePath))) #Move the file to the destination folder
         return True
     except shutil.Error as e:
-        logging.error(f"Error moving {file_path} to {folder_name}. Reason: {e}")
+        logging.error(f"Error moving {filePath} to {folderName}. Reason: {e}") #Log an error message if there's a problem with the move operation
         return False
 
-def organize_folder(dir_path, folders):
-    """Organize files in the specified directory based on the given folders mapping."""
-    moved_count = 0
-    queue = [dir_path]
+#Organize files in the specified directory based on the given folders mapping.
+def organizeFolder(dirPath, folders):
+    movedCount = 0    #Keep track of how many files were moved
+    queue = [dirPath] #Log an error message if there's a problem with the move operation
 
+    #Process each directory in the queue
     while queue:
-        current_path = queue.pop()
-        for item_name in os.listdir(current_path):
-            item_path = os.path.join(current_path, item_name)
+        currentPath = queue.pop()
+        for itemName in os.listdir(currentPath):
+            itemPath = os.path.join(currentPath, itemName)
 
-            # If it's a directory, add to the queue
-            if os.path.isdir(item_path):
-                queue.append(item_path)
+            #If it's a directory, add to the queue
+            if os.path.isdir(itemPath):
+                queue.append(itemPath)
                 continue
 
-            file_ext = os.path.splitext(item_name)[1].lower()
-            has_moved = False
+            #Extract the file extension from the filename
+            fileExt = os.path.splitext(itemName)[1].lower()
+            hasMoved = False
 
+            #Check if the file extension matches any of the predefined categories
             for folder, extensions in folders.items():
-                if file_ext in extensions:
-                    if move_file_to_folder(item_path, folder, dir_path):
-                        has_moved = True
-                        moved_count += 1
+                if fileExt in extensions:
+                    if moveFileToFolder(itemPath, folder, dirPath): #Move the file to the appropriate folder
+                        hasMoved = True
+                        movedCount += 1
                     break
 
-            if not has_moved:
-                if move_file_to_folder(item_path, 'Others', dir_path):
-                    moved_count += 1
+            #If the file didn't match any category, move it to the 'Others' folder
+            if not hasMoved:
+                if moveFileToFolder(itemPath, 'Others', dirPath):
+                    movedCount += 1
 
-    return moved_count
+    return movedCount
 
-def main(target_folder):
+def main(targetFolder):
     folders = {
         'Images': ['.jpg', '.jpeg', '.png', '.gif', '.tiff', '.bmp', '.heif'],
         'Documents': ['.pdf', '.docx', '.doc', '.xlsx', '.xls', '.pptx', '.ppt', '.txt', '.md'],
@@ -55,15 +63,18 @@ def main(target_folder):
         'Video': ['.mp4', '.mov', '.avi', '.mkv', '.flv'],
     }
 
-    # Convert extensions to lowercase for case-insensitive check
+    #Convert extensions to lowercase for case-insensitive check
     for folder, extensions in folders.items():
         folders[folder] = [ext.lower() for ext in extensions]
 
-    moved_files = organize_folder(target_folder, folders)
-    logging.info(f"{moved_files} files have been organized.")
+    #Organize the directory and log the results
+    movedFiles = organizeFolder(targetFolder, folders)
+    logging.info(f"{movedFiles} files have been organized.")
 
 if __name__ == "__main__":
-    directory_to_organize = input("Enter the path of the directory to organize (default is Downloads): ")
-    if not directory_to_organize:
-        directory_to_organize = os.path.expanduser("~/Downloads")
-    main(directory_to_organize)
+    directoryToOrganize = input("Enter the path of the directory to organize (default is Downloads): ")
+
+    if not directoryToOrganize:
+        directoryToOrganize = os.path.expanduser("~/Downloads")
+        
+    main(directoryToOrganize)
