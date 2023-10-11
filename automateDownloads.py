@@ -23,7 +23,7 @@ def moveFileToFolder(filePath, folderName, basePath):
 #Organize files in the specified directory based on the given folders mapping.
 def organizeFolder(dirPath, folders):
     movedCount = 0    #Keep track of how many files were moved
-    queue = [dirPath] #Log an error message if there's a problem with the move operation
+    queue = [dirPath]
 
     #Process each directory in the queue
     while queue:

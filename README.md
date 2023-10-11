@@ -1,41 +1,34 @@
-# File Organizer
+The provided script is a simple utility to organize files in a directory based on their file extensions. The script defines categories like Images, Documents, Audio, and Video, and automatically moves files to their respective folders within the target directory.
+Requirements
 
-File Organizer is a simple Python script to automatically organize your files into predefined folders based on their file extensions.
+    Python 3.x
 
-## Features
-- Organize files into folders like `Images`, `Documents`, `Audio`, and `Video`.
-- Move any other files that do not match predefined categories into the `Others` folder.
-- Can handle nested folders and will search through them recursively to organize all files.
-- Provides logging capabilities to track files that were moved.
+How to Use
 
-## Requirements
+    Run the script by using the command:
+    python automateDownloads.py
+    
+    When prompted, enter the path of the directory you want to organize. If you don't specify any directory, by default, it will organize the 'Downloads' folder of the user.
+    Enter the path of the directory to organize (default is Downloads): [YOUR_DIRECTORY_PATH]
 
-- Python 3.x
+    The script will then process the specified directory and its sub-directories, moving the files to their respective folders based on their file extensions.
 
-## How to Use
+    Once done, the script will log the number of files it has organized.
 
-1. **Clone the Repository**  
-   Clone this repository to your machine or simply download the script.
-
-2. **Run the Script**  
-   Navigate to the directory containing the script and run:
-
-   ```bash
-   python automateDownloads.py
-
-    Enter the Directory to Organize
-    When prompted, enter the full path of the directory you want to organize. If you don't provide a path, by default, it will organize the Downloads folder.
-
-How it Works
-
-The script uses a predefined mapping of folders and their respective file extensions to move files. The current mappings are:
-
-    Images: .jpg, .jpeg, .png, .gif, .tiff, .bmp, .heif
-    Documents: .pdf, .docx, .doc, .xlsx, .xls, .pptx, .ppt, .txt, .md
-    Audio: .mp3, .wav, .m4a, .flac, .aac
-    Video: .mp4, .mov, .avi, .mkv, .flv
-
-Any other file types will be moved to the Others folder.
 Customization
 
-To customize which file extensions go into which folders, simply edit the folders dictionary in the main function.
+    You can customize the categories and the file extensions that map to each category:
+
+    In the main() function, the folders dictionary defines the folders and their associated file extensions:
+    folders = {
+        'Images': ['.jpg', '.jpeg', '.png', '.gif', '.tiff', '.bmp', '.heif'],
+        'Documents': ['.pdf', '.docx', '.doc', '.xlsx', '.xls', '.pptx', '.ppt', '.txt', '.md'],
+        'Audio': ['.mp3', '.wav', '.m4a', '.flac', '.aac'],
+        'Video': ['.mp4', '.mov', '.avi', '.mkv', '.flv'],
+    }
+    You can add or remove entries from this dictionary to customize the behavior of the file organizer.
+
+Note
+
+    Files with extensions not matching any predefined category will be moved to an 'Others' folder.
+    The script will also handle the scenario where the target directory or file already exists, logging an error in such cases.
