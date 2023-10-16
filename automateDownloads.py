@@ -13,6 +13,15 @@ def moveFileToFolder(filePath, folderName, basePath):
     if not os.path.exists(folderPath):
         os.makedirs(folderPath)
 
+    destinationPath = os.path.join(folderPath, os.path.basename(filePath))
+    
+    #Check if a file with the same name already exists in the destination
+    counter = 1
+    while os.path.exists(destinationPath):
+        base, ext = os.path.splitext(os.path.basename(filePath))
+        destinationPath = os.path.join(folderPath, f"{base}_{counter}{ext}")
+        counter += 1
+
     try:
         shutil.move(filePath, os.path.join(folderPath, os.path.basename(filePath))) #Move the file to the destination folder
         return True
